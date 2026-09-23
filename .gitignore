@@ -1,0 +1,30 @@
+# Dependencies
+node_modules/
+
+# Next.js build
+.next/
+out/
+next-env.d.ts
+
+# Environment
+.env
+.env.local
+.env.production
+.env*.local
+
+# Local data store (dev mode writes outside the repo)
+data/
+*.json
+!package.json
+
+# Logs
+npm-debug.log*
+*.tsbuildinfo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Secrets — never commit
+*.pem
+service-account*.json
