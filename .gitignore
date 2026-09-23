@@ -20,6 +20,7 @@ data/
 # Logs
 npm-debug.log*
 *.tsbuildinfo
+*.log
 
 # OS
 .DS_Store
