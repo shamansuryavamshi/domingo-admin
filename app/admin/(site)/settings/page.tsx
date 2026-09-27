@@ -31,11 +31,12 @@ export default async function SettingsPage() {
 
       <div className="card">
         <span className="card__label">Environment</span>
-        <table className="table">
+        <div className="table-scroll">
+          <table className="table">
           <thead>
             <tr>
-              <th>Variable</th>
-              <th>Status</th>
+              <th scope="col">Variable</th>
+              <th scope="col">Status</th>
             </tr>
           </thead>
           <tbody>
@@ -47,6 +48,7 @@ export default async function SettingsPage() {
             ))}
           </tbody>
         </table>
+        </div>
         <p className="btn-hint" style={{ marginTop: 14 }}>
           These come from this project&apos;s own environment variables — independent of the old business system.
         </p>

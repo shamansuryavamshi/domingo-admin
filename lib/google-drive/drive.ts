@@ -62,10 +62,10 @@ export async function uploadHeroImage(imageDataUrl: string): Promise<DriveUpload
   if (!mimeMatch) {
     throw new Error("Image must be a valid base64 data URL.");
   }
-  const mimeType = mimeMatch[1];
+  const mimeType = mimeMatch[1].toLowerCase();
   const buf = Buffer.from(mimeMatch[2], "base64");
   if (buf.length === 0) throw new Error("Image data is empty.");
-  if (buf.length > 15 * 1024 * 1024) throw new Error("Image must be under 15MB.");
+  if (buf.length > 3 * 1024 * 1024) throw new Error("Image must be under 3MB.");
 
   const auth = new google.auth.JWT({
     email: authJson.client_email,
@@ -79,18 +79,24 @@ export async function uploadHeroImage(imageDataUrl: string): Promise<DriveUpload
   const fileName = "domingo-hero-" + Date.now() + "." + ext;
 
   // supportsAllDrives keeps this compatible with both My Drive and Shared Drives.
-  const fileRes = await drive.files.create({
-    requestBody: {
-      name: fileName,
-      parents: [folderId],
-      mimeType,
-    },
-    media: {
-      mimeType,
-      body: Readable.from(buf),
-    },
-    supportsAllDrives: true,
-  });
+  let fileRes;
+  try {
+    fileRes = await drive.files.create({
+      requestBody: {
+        name: fileName,
+        parents: [folderId],
+        mimeType,
+      },
+      media: {
+        mimeType,
+        body: Readable.from(buf),
+      },
+      supportsAllDrives: true,
+    });
+  } catch (e) {
+    console.error("[domingo] Google Drive upload failed:", e instanceof Error ? e.message : e);
+    throw new Error("Unable to upload image to storage.");
+  }
 
   const fileId = fileRes.data.id;
   if (!fileId) throw new Error("Drive upload failed: no file id returned.");

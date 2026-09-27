@@ -10,9 +10,20 @@ import { cookies } from "next/headers";
 
 export const AUTH_COOKIE = "domingo_admin_session";
 
-const ADMIN_EMAIL = process.env.DOMINGO_ADMIN_EMAIL || "admin@domingo.in";
-const ADMIN_PASSWORD = process.env.DOMINGO_ADMIN_PASSWORD || "domingo123";
-const AUTH_SECRET = process.env.DOMINGO_AUTH_SECRET || "domingo-dev-secret-change-me";
+const IS_PROD = process.env.NODE_ENV === "production";
+
+// Fail closed in production: if the operator forgot to set these, credentials
+// simply never match and sessions can never be created or verified.
+const ADMIN_EMAIL = process.env.DOMINGO_ADMIN_EMAIL || (IS_PROD ? "" : "admin@domingo.in");
+const ADMIN_PASSWORD = process.env.DOMINGO_ADMIN_PASSWORD || (IS_PROD ? "" : "domingo123");
+const AUTH_SECRET = process.env.DOMINGO_AUTH_SECRET || (IS_PROD ? "" : "domingo-dev-secret-change-me");
+
+function currentSecret(): string {
+  if (!AUTH_SECRET) {
+    throw new Error("DOMINGO_AUTH_SECRET must be configured in production.");
+  }
+  return AUTH_SECRET;
+}
 
 export type AdminSession = {
   email: string;
@@ -20,7 +31,7 @@ export type AdminSession = {
 };
 
 function sign(data: string): string {
-  return crypto.createHmac("sha256", AUTH_SECRET).update(data).digest("base64url");
+  return crypto.createHmac("sha256", currentSecret()).update(data).digest("base64url");
 }
 
 export function createSession(email: string): string {
@@ -37,7 +48,12 @@ export function verifySession(token: string | undefined | null): AdminSession | 
   const parts = token.split(".");
   if (parts.length !== 2) return null;
   const [body, sig] = parts;
-  const expected = sign(body);
+  let expected: string;
+  try {
+    expected = sign(body);
+  } catch {
+    return null;
+  }
   const a = Buffer.from(sig);
   const b = Buffer.from(expected);
   if (a.length !== b.length) return null;

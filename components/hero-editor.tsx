@@ -4,7 +4,7 @@ import { useRef, useState } from "react";
 
 type Hero = { name: string; image: string; updatedAt: string };
 
-const MAX_IMG = 15 * 1024 * 1024;
+const MAX_IMG = 3 * 1024 * 1024;
 
 export default function HeroEditor({
   initialHero,
@@ -50,7 +50,7 @@ export default function HeroEditor({
       return;
     }
     if (file.size > MAX_IMG) {
-      setError("Image must be under 15MB.");
+      setError("Image must be under 3MB.");
       return;
     }
     const reader = new FileReader();
@@ -119,9 +119,10 @@ export default function HeroEditor({
     <div className="two-col">
       <div className="col">
         <div className="card">
-          <span className="card__label">Dessert name</span>
+          <span className="card__label" id="hero-name-label">Dessert name</span>
           <input
             className="input"
+            aria-labelledby="hero-name-label"
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="e.g. Burnt Basque Cheesecake"
@@ -140,7 +141,16 @@ export default function HeroEditor({
           />
           <div
             className={"dropzone" + (previewSrc ? " dropzone--has-img" : "")}
+            role="button"
+            tabIndex={0}
+            aria-label="Choose an image for the dessert"
             onClick={() => fileRef.current?.click()}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                fileRef.current?.click();
+              }
+            }}
           >
             {previewSrc ? (
               // eslint-disable-next-line @next/next/no-img-element

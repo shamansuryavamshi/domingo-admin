@@ -32,28 +32,30 @@ export default async function ReservationsPage() {
         {rows.length === 0 ? (
           <div className="empty">No reservations yet.</div>
         ) : (
-          <table className="table">
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Contact</th>
-                <th>Qty</th>
-                <th>Note</th>
-                <th>When</th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((r) => (
-                <tr key={r.id}>
-                  <td><strong>{r.name}</strong></td>
-                  <td>{r.phone}</td>
-                  <td>{r.quantity}</td>
-                  <td>{r.note || "—"}</td>
-                  <td style={{ color: "var(--ink-faint)", fontSize: 13 }}>{fmt(r.createdAt)}</td>
+          <div className="table-scroll">
+            <table className="table">
+              <thead>
+                <tr>
+                  <th scope="col">Name</th>
+                  <th scope="col">Contact</th>
+                  <th scope="col">Qty</th>
+                  <th scope="col">Note</th>
+                  <th scope="col">When</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {rows.map((r) => (
+                  <tr key={r.id}>
+                    <td><strong>{r.name}</strong></td>
+                    <td>{r.phone}</td>
+                    <td>{r.quantity}</td>
+                    <td>{r.note || "—"}</td>
+                    <td style={{ color: "var(--ink-faint)", fontSize: 13 }}>{fmt(r.createdAt)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
     </>

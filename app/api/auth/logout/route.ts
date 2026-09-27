@@ -4,6 +4,7 @@
 
 import { NextResponse } from "next/server";
 import { AUTH_COOKIE } from "@/lib/auth/session";
+import { securityHeaders } from "@/lib/security";
 
 export const runtime = "nodejs";
 
