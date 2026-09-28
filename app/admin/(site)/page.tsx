@@ -16,7 +16,15 @@ export default async function DashboardPage() {
   }
 
   const drive = driveConfigStatus();
-  const hero = data?.hero || { name: "", image: "", updatedAt: "" };
+  const hero = data?.hero || {
+    name: "",
+    image: "",
+    updatedAt: "",
+    description: "",
+    price: 0,
+    quantity: 0,
+    releaseDay: "",
+  };
 
   function fmt(iso: string) {
     if (!iso) return "Not published yet";
@@ -59,11 +67,13 @@ export default async function DashboardPage() {
 
       <div className="card">
         <span className="card__label">Storage status</span>
-        <p className="card__note" style={{ marginTop: 0, marginBottom: 6 }}>
-          Google Drive: {drive.configured ? "Configured" : "Not configured"} · Service account: {drive.email || "—"}
+        <p className={"badge" + (drive.configured ? " badge--ok" : "")}>
+          Google Drive — {drive.configured ? "Connected" : "Not connected"}
         </p>
-        <p className="card__note" style={{ marginTop: 0 }}>
-          {drive.folderId ? "Folder ID: " + drive.folderId : "No Drive folder ID set"}
+        <p className="btn-hint">
+          {drive.configured
+            ? "Hero images upload to the connected Drive folder."
+            : "Set the Drive service account on the server to enable image uploads."}
         </p>
       </div>
 

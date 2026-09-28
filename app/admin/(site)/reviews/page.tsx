@@ -28,6 +28,18 @@ export default async function ReviewsPage() {
 
       {error && <p className="form-error show">{error}</p>}
 
+      {data && !data.settings.reviews.showReviews && (
+        <p className="form-error show">
+          Reviews are set to hidden in Settings, so the public site is not showing them.
+        </p>
+      )}
+
+      {data && !data.settings.reviews.submissionEnabled && (
+        <p className="form-error show">
+          Review submission is disabled in Settings, so no new reviews can be submitted.
+        </p>
+      )}
+
       <div className="card">
         {rows.length === 0 ? (
           <div className="empty">No reviews yet.</div>

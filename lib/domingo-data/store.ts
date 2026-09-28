@@ -6,10 +6,27 @@
    Nothing about the old business system.
    ============================================ */
 
+import {
+  DEFAULT_DESSERT,
+  DEFAULT_SETTINGS,
+  type DomingoSettings,
+  type DessertSettings,
+  sanitizeDessert,
+  sanitizeSettings,
+} from "../domingo-settings";
+
+/* The hero record is also the dessert record. name/image were always
+   here; description/price/quantity/releaseDay extend it in place so
+   there is exactly one dessert record and the hero editor keeps
+   working unchanged. */
 export type DomingoHero = {
   name: string;
   image: string;
   updatedAt: string;
+  description: string;
+  price: number;
+  quantity: number;
+  releaseDay: string;
 };
 
 export type DomingoReservation = {
@@ -34,13 +51,23 @@ export type DomingoData = {
   hero: DomingoHero;
   reservations: DomingoReservation[];
   reviews: DomingoReview[];
+  settings: DomingoSettings;
   updatedAt: string;
 };
 
 export const DEFAULT_DATA: DomingoData = {
-  hero: { name: "", image: "", updatedAt: "" },
+  hero: {
+    name: DEFAULT_DESSERT.name,
+    image: "",
+    updatedAt: "",
+    description: DEFAULT_DESSERT.description,
+    price: DEFAULT_DESSERT.price,
+    quantity: DEFAULT_DESSERT.quantity,
+    releaseDay: DEFAULT_DESSERT.releaseDay,
+  },
   reservations: [],
   reviews: [],
+  settings: DEFAULT_SETTINGS,
   updatedAt: "",
 };
 
@@ -58,14 +85,20 @@ function nowIso(offsetMs = 0): string {
 function sanitizeData(raw: unknown): DomingoData {
   const d = (raw && typeof raw === "object" ? raw : {}) as Partial<DomingoData>;
   const hero = (d.hero && typeof d.hero === "object" ? d.hero : {}) as Partial<DomingoHero>;
+  const dessert = sanitizeDessert(hero);
   return {
     hero: {
       name: String(hero.name == null ? "" : hero.name),
       image: String(hero.image == null ? "" : hero.image),
       updatedAt: String(hero.updatedAt || ""),
+      description: dessert.description,
+      price: dessert.price,
+      quantity: dessert.quantity,
+      releaseDay: dessert.releaseDay,
     },
     reservations: Array.isArray(d.reservations) ? d.reservations : [],
     reviews: Array.isArray(d.reviews) ? d.reviews : [],
+    settings: sanitizeSettings(d.settings),
     updatedAt: String(d.updatedAt || ""),
   };
 }
@@ -161,12 +194,51 @@ export async function saveData(data: DomingoData, message?: string): Promise<Dom
 export { nowIso };
 
 /* ---------- Mutations used by the API ---------- */
+
+/** The dessert record is the hero record minus the image. */
+export function dessertOf(data: DomingoData): DessertSettings {
+  return {
+    name: data.hero.name,
+    description: data.hero.description,
+    price: data.hero.price,
+    quantity: data.hero.quantity,
+    releaseDay: data.hero.releaseDay,
+  };
+}
+
 export async function updateHero(hero: Pick<DomingoHero, "name" | "image">): Promise<DomingoData> {
   const data = await getData();
   const updatedAt = nowIso();
-  data.hero = { name: String(hero.name || "").trim(), image: String(hero.image || ""), updatedAt };
+  // Preserve the dessert fields the hero editor does not manage.
+  data.hero = {
+    ...data.hero,
+    name: String(hero.name || "").trim(),
+    image: String(hero.image || ""),
+    updatedAt,
+  };
   data.updatedAt = updatedAt;
   return saveData(data, "Update Domingo hero [automated]");
+}
+
+/** Single read-modify-write for the whole settings form. */
+export async function updateSettings(
+  settings: DomingoSettings,
+  dessert: DessertSettings
+): Promise<DomingoData> {
+  const data = await getData();
+  const updatedAt = nowIso();
+  data.settings = settings;
+  data.hero = {
+    ...data.hero,
+    name: dessert.name,
+    description: dessert.description,
+    price: dessert.price,
+    quantity: dessert.quantity,
+    releaseDay: dessert.releaseDay,
+    updatedAt,
+  };
+  data.updatedAt = updatedAt;
+  return saveData(data, "Update Domingo settings [automated]");
 }
 
 export async function addReservation(r: Omit<DomingoReservation, "id" | "createdAt">): Promise<DomingoData> {

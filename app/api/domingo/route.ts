@@ -1,13 +1,14 @@
 /* ============================================
    NEW DOMINGO API — /api/domingo
    Owned by the new domingo-admin project.
-   GET  -> public hero data (no auth, no store)
+   GET  -> public data (no auth, no secrets)
    PUT  -> admin updates the hero (session required)
    ============================================ */
 
 import { NextRequest, NextResponse } from "next/server";
-import { getData, updateHero } from "@/lib/domingo-data/store";
+import { getData, updateHero, dessertOf } from "@/lib/domingo-data/store";
 import { getSession } from "@/lib/auth/session";
+import { publicProjection } from "@/lib/domingo-settings";
 import {
   corsHeaders,
   securityHeaders,
@@ -18,11 +19,34 @@ import {
 
 export const runtime = "nodejs";
 
+// Answer the browser CORS preflight.
+export async function OPTIONS() {
+  return new NextResponse(null, {
+    status: 204,
+    headers: {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type",
+      "Access-Control-Max-Age": "86400",
+    },
+  });
+}
+
 export async function GET() {
   try {
     const data = await getData();
+
+    // Admin setting: public site status. When it is not "live" the
+    // public site is taken down deliberately.
+    if (data.settings.publicSite.status !== "live") {
+      return NextResponse.json(
+        { error: "The Domingo site is temporarily unavailable." },
+        { status: 503, headers: { ...corsHeaders(), ...securityHeaders() } }
+      );
+    }
+
     return NextResponse.json(
-      { hero: data.hero },
+      { hero: data.hero, ...publicProjection(data.settings, dessertOf(data)) },
       { headers: { ...corsHeaders(), ...securityHeaders() } }
     );
   } catch (e) {

@@ -91,11 +91,8 @@ export default function LoginPage() {
         </form>
 
         <p className="login-hint">
-          Default credentials come from your environment variables:
-          <br />
-          <strong>
-            DOMINGO_ADMIN_EMAIL / DOMINGO_ADMIN_PASSWORD
-          </strong>
+          Administrator access only. Credentials are managed by the site owner on the server and are never
+          shown in this interface.
         </p>
       </div>
     </div>

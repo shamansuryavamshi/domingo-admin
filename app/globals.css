@@ -211,59 +211,40 @@ a { color: inherit; }
 .table td { padding: 12px; border-bottom: 2px solid var(--line); vertical-align: top; overflow-wrap: anywhere; }
 .table tr:last-child td { border-bottom: none; }
 
-/* ---------------- Environment card ----------------
-   Two shrinkable columns so the row can never be wider
-   than the card. Long values wrap; the fixed-width Drive
-   folder ID truncates with the full value on hover. */
+/* ---------------- Settings form ---------------- */
 
-.env {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  font-size: 14px;
+.set { border: none; margin: 0 0 16px; padding: 0; min-width: 0; }
+.set:last-child { margin-bottom: 0; }
+.set__label { display: block; font-size: 12px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 7px; padding: 0; }
+.set__hint { margin-top: 6px; font-size: 11.5px; font-weight: 500; color: var(--ink-faint); line-height: 1.45; overflow-wrap: anywhere; }
+.set__area { resize: vertical; min-height: 76px; line-height: 1.5; }
+.set-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (max-width: 480px) { .set-pair { grid-template-columns: 1fr; } }
+
+.seg { display: flex; flex-wrap: wrap; gap: 8px; }
+.seg__opt {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 10px 14px; border-radius: 10px;
+  border: 2px solid var(--ink); background: var(--cream);
+  font-size: 13px; font-weight: 700; color: var(--ink-soft);
+  cursor: pointer; min-width: 0; max-width: 100%;
+  overflow-wrap: anywhere;
+  transition: background 0.15s ease, color 0.15s ease;
 }
+.seg__opt:hover { background: var(--cream-2); }
+.seg__opt.is-on { background: var(--ink); color: var(--cream); }
+.seg__opt input { position: absolute; opacity: 0; width: 1px; height: 1px; margin: 0; }
+.seg__opt:focus-within { outline: 3px solid var(--brand); outline-offset: 2px; }
+.seg__opt span { min-width: 0; overflow-wrap: anywhere; }
 
-.env__row { display: contents; }
-
-.env__th {
-  min-width: 0;
-  max-width: 100%;
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--ink-faint);
-  padding: 10px 12px;
-  border-bottom: 2px solid var(--ink);
-}
-
-.env__k,
-.env__v {
-  min-width: 0;
-  max-width: 100%;
-  padding: 12px;
-  border-bottom: 2px solid var(--line);
+.badge {
+  display: inline-block; margin: 0;
+  padding: 7px 12px; border-radius: 999px;
+  border: 2px solid var(--ink); background: var(--cream);
+  font-size: 12.5px; font-weight: 800; letter-spacing: 0.02em;
   overflow-wrap: anywhere;
 }
-
-.env__k { font-weight: 600; }
-.env__k code { overflow-wrap: anywhere; word-break: break-word; }
-
-.env__v--compact {
-  display: block;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.env__row--last .env__k,
-.env__row--last .env__v { border-bottom: none; }
-
-@media (max-width: 420px) {
-  .env { grid-template-columns: minmax(0, 1fr); }
-  .env__th { display: none; }
-  .env__k { padding-bottom: 0; border-bottom: none; }
-  .env__v { padding-top: 0; }
-}
+.badge--ok { border-color: var(--ok); color: var(--ok); background: #E7F4EA; }
 
 .empty { padding: 28px; text-align: center; color: var(--ink-faint); font-size: 14px; font-weight: 600; }
 

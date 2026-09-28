@@ -77,6 +77,22 @@ export async function POST(req: NextRequest) {
     );
   }
 
+  // Admin setting: review submission.
+  try {
+    const store = await getData();
+    if (!store.settings.reviews.submissionEnabled) {
+      return NextResponse.json(
+        { error: "Reviews are currently closed." },
+        { status: 403, headers: { ...corsHeaders(), ...securityHeaders() } }
+      );
+    }
+  } catch (e) {
+    return NextResponse.json(
+      { error: safeError(e, "Unable to check reviews right now.") },
+      { status: 503, headers: { ...corsHeaders(), ...securityHeaders() } }
+    );
+  }
+
   try {
     await addReview({ name, product: product || undefined, text });
     return NextResponse.json({ success: true }, { headers: { ...corsHeaders(), ...securityHeaders() } });

@@ -85,6 +85,32 @@ export async function POST(req: NextRequest) {
     );
   }
 
+  // Admin setting: reservations enabled / maximum accepted.
+  let store;
+  try {
+    store = await getData();
+  } catch (e) {
+    return NextResponse.json(
+      { error: safeError(e, "Unable to check reservations right now.") },
+      { status: 503, headers: { ...corsHeaders(), ...securityHeaders() } }
+    );
+  }
+
+  if (!store.settings.reservations.enabled) {
+    return NextResponse.json(
+      { error: store.settings.reservations.message || "Reservations are currently closed." },
+      { status: 403, headers: { ...corsHeaders(), ...securityHeaders() } }
+    );
+  }
+
+  const cap = store.settings.reservations.maxReservations;
+  if (cap > 0 && (store.reservations?.length || 0) >= cap) {
+    return NextResponse.json(
+      { error: store.settings.reservations.message || "All reservation slots are full for now." },
+      { status: 403, headers: { ...corsHeaders(), ...securityHeaders() } }
+    );
+  }
+
   try {
     await addReservation({ name, phone, quantity, note: note || undefined });
     return NextResponse.json({ success: true }, { headers: { ...corsHeaders(), ...securityHeaders() } });
