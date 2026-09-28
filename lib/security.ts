@@ -16,7 +16,7 @@ export const MAX_PRODUCT = 80;
 export const MAX_REVIEW_TEXT = 500;
 export const MAX_QUANTITY = 20;
 
-export const CACHE = "no-store, no-cache, must-revalidate, proxy-revalidate";
+const CACHE = "no-store, no-cache, must-revalidate, proxy-revalidate";
 
 /** CORS for public read/write endpoints consumed cross-origin by the GitHub Pages site. */
 export function corsHeaders(): Record<string, string> {

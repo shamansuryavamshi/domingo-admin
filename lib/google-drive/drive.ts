@@ -30,11 +30,6 @@ function getAuthJson(): any {
   }
 }
 
-export function isDriveConfigured(): boolean {
-  const auth = getAuthJson();
-  return Boolean(auth && auth.client_email && auth.private_key);
-}
-
 export function driveConfigStatus(): { configured: boolean; folderId: string; email: string } {
   const auth = getAuthJson();
   return {

@@ -18,14 +18,3 @@ export async function POST() {
   });
   return res;
 }
-
-export async function GET() {
-  const res = NextResponse.redirect(new URL("/admin/login", process.env.NEXTAUTH_URL || "http://localhost:3000"));
-  res.cookies.set(AUTH_COOKIE, "", {
-    httpOnly: true,
-    sameSite: "lax",
-    path: "/",
-    maxAge: 0,
-  });
-  return res;
-}

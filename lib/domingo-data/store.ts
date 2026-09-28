@@ -191,8 +191,6 @@ export async function saveData(data: DomingoData, message?: string): Promise<Dom
   return data;
 }
 
-export { nowIso };
-
 /* ---------- Mutations used by the API ---------- */
 
 /** The dessert record is the hero record minus the image. */
