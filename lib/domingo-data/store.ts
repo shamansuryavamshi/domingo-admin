@@ -119,7 +119,7 @@ async function getFromGitHub(): Promise<DomingoData> {
   }
 }
 
-async function writeToGitHub(data: DomingoData): Promise<void> {
+async function writeToGitHub(data: DomingoData, message?: string): Promise<void> {
   const content = Buffer.from(JSON.stringify(data, null, 2)).toString("base64");
   let sha: string | null = null;
   const getRes = await fetch(GH_API + "?ref=" + DATA_BRANCH, {
@@ -131,7 +131,7 @@ async function writeToGitHub(data: DomingoData): Promise<void> {
     sha = existing.sha;
   }
   const body: Record<string, unknown> = {
-    message: "Update Domingo data [automated]",
+    message: message || "Update Domingo data [automated]",
     content,
     branch: DATA_BRANCH,
   };
@@ -184,7 +184,7 @@ export async function getData(): Promise<DomingoData> {
 
 export async function saveData(data: DomingoData, message?: string): Promise<DomingoData> {
   if (process.env.DOMINGO_DATA_STORE === "github" || (githubEnabled() && process.env.DOMINGO_DATA_STORE !== "local")) {
-    await writeToGitHub(data);
+    await writeToGitHub(data, message);
   } else {
     writeLocal(data);
   }
