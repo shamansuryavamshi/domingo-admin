@@ -1,0 +1,38 @@
+{
+  "hero": {
+    "name": "creme brulee",
+    "image": "",
+    "updatedAt": "2026-10-29T05:34:51.354Z",
+    "description": "",
+    "price": 0,
+    "quantity": 0,
+    "releaseDay": "Sunday"
+  },
+  "reservations": [],
+  "reviews": [],
+  "settings": {
+    "business": {
+      "name": "DOMINGO",
+      "location": "Bangalore",
+      "operatingDay": "Sunday",
+      "status": "open"
+    },
+    "reservations": {
+      "enabled": true,
+      "maxReservations": 20,
+      "message": "Reservations open every Sunday while quantities last."
+    },
+    "reviews": {
+      "showReviews": true,
+      "submissionEnabled": true
+    },
+    "announcement": {
+      "enabled": true,
+      "text": "hello"
+    },
+    "publicSite": {
+      "status": "live"
+    }
+  },
+  "updatedAt": "2026-10-29T05:34:51.354Z"
+}
